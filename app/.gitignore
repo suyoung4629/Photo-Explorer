@@ -2,9 +2,6 @@
 .gradle/
 build/
 
-# Kotlin 2.x compiler session cache
-.kotlin/
-
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -35,6 +32,3 @@ google-services.json
 
 # Android Profiling
 *.hprof
-
-# Claude Code local data
-.claude/
