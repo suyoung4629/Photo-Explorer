@@ -12,6 +12,7 @@ data class FavoritePhotoEntity(
     val small: String,
     val thumb: String,
     val username: String,
+    val profileImageUrl: String?,
     val width: Int,
     val height: Int,
     val description: String?,

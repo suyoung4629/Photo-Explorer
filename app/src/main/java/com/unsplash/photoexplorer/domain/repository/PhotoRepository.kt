@@ -9,11 +9,15 @@ interface PhotoRepository {
 
     /**
      * Unsplash 사진 목록을 페이지 단위로 스트림.
-     *
-     * 각 [Photo.isFavorite]는 로컬 DB의 즐겨찾기 상태와 자동 동기화되어,
-     * 좋아요 토글 시 별도 새로고침 없이 갱신된다.
      */
     fun getPhotoList(): Flow<PagingData<Photo>>
+
+    /**
+     * 현재 즐겨찾기로 저장된 모든 사진의 id 집합을 스트림.
+     *
+     * [getPhotoList]의 Paging 결과에 좋아요 상태를 결합할 때 사용한다.
+     */
+    fun observeFavoriteIds(): Flow<Set<String>>
 
     /**
      * 사진 단건의 상세 정보를 조회.

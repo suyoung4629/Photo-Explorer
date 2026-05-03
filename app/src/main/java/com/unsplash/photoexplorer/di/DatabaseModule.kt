@@ -22,7 +22,9 @@ object DatabaseModule {
             context,
             PhotoExplorerDatabase::class.java,
             "photo_explorer.db",
-        ).build()
+        )
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
 
     @Provides
     fun provideFavoritePhotoDao(db: PhotoExplorerDatabase): FavoritePhotoDao =

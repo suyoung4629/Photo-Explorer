@@ -15,36 +15,35 @@ import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.domain.model.PhotoDetail
 import com.unsplash.photoexplorer.domain.repository.PhotoRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(
-    private val api: UnsplashApi,
+    private val unsplashApi: UnsplashApi,
     private val favoriteDao: FavoritePhotoDao,
     private val photoFileStore: PhotoFileStore,
 ) : PhotoRepository {
 
-    override fun getPhotoList(): Flow<PagingData<Photo>> {
-        val pagerFlow = Pager(
+    override fun getPhotoList(): Flow<PagingData<Photo>> =
+        Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
                 initialLoadSize = PAGE_SIZE,
+                prefetchDistance = PAGE_SIZE,
                 enablePlaceholders = false,
             ),
-            pagingSourceFactory = { PhotoPagingSource(api) },
-        ).flow
-
-        return combine(pagerFlow, favoriteDao.observeFavoriteIds()) { pagingData, favoriteIds ->
-            val favoriteSet = favoriteIds.toSet()
-            pagingData.map { dto -> dto.toPhoto(isFavorite = dto.id in favoriteSet) }
+            pagingSourceFactory = { PhotoPagingSource(unsplashApi) },
+        ).flow.map { pagingData ->
+            pagingData.map { dto -> dto.toPhoto(isFavorite = false) }
         }
-    }
+
+    override fun observeFavoriteIds(): Flow<Set<String>> =
+        favoriteDao.observeFavoriteIds().map { it.toSet() }
 
     override suspend fun getPhotoDetail(id: String): PhotoDetail {
-        val dto = api.getPhotoDetail(id)
+        val dto = unsplashApi.getPhotoDetail(id)
         val isFavorite = favoriteDao.isFavorite(id)
         return dto.toPhotoDetail(isFavorite = isFavorite)
     }
@@ -55,7 +54,7 @@ class PhotoRepositoryImpl @Inject constructor(
             photoFileStore.delete(existing.localFilePath)
             favoriteDao.deleteById(photo.id)
         } else {
-            val downloadUrl = api.trackDownload(photo.id).url
+            val downloadUrl = unsplashApi.trackDownload(photo.id).url
             val localPath = photoFileStore.download(downloadUrl, photo.id)
             favoriteDao.insert(
                 photo.toFavoriteEntity(
@@ -70,7 +69,7 @@ class PhotoRepositoryImpl @Inject constructor(
         favoriteDao.observeAll().map { entities -> entities.map { it.toPhoto() } }
 
     override suspend fun trackDownload(photoId: String): String =
-        api.trackDownload(photoId).url
+        unsplashApi.trackDownload(photoId).url
 
     private companion object {
         const val PAGE_SIZE = 20

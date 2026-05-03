@@ -27,4 +27,12 @@ data class UrlsDto(
 data class UserDto(
     @SerialName("username") val username: String = "",
     @SerialName("name") val name: String? = null,
+    @SerialName("profile_image") val profileImage: ProfileImageDto = ProfileImageDto(),
+)
+
+@Serializable
+data class ProfileImageDto(
+    @SerialName("small") val small: String = "",
+    @SerialName("medium") val medium: String = "",
+    @SerialName("large") val large: String = "",
 )
