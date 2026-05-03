@@ -254,12 +254,16 @@ private fun PhotoItemFooter(
             contentScale = ContentScale.Crop,
         )
         Spacer(Modifier.width(8.dp))
-        Text(
-            text = "by ${photo.username}",
-            modifier = Modifier.weight(1f),
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-        )
+        if (!photo.name.isNullOrBlank()) {
+            Text(
+                text = "by ${photo.name}",
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+            )
+        } else {
+            Spacer(Modifier.weight(1f))
+        }
         Box(
             modifier = Modifier.size(36.dp),
             contentAlignment = Alignment.Center,

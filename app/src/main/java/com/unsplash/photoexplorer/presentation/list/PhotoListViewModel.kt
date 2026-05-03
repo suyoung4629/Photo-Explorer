@@ -67,13 +67,14 @@ class PhotoListViewModel @Inject constructor(
      */
     fun toggleFavorite(photo: Photo) {
         if (photo.id.isBlank()) return
+        if (photo.id in _uiState.value.togglingPhotoIds) return
         viewModelScope.launch {
             _uiState.update { it.copy(togglingPhotoIds = it.togglingPhotoIds + photo.id) }
-            val wasAdding = !photo.isFavorite
+            val willBeFavorite = !photo.isFavorite
             try {
                 toggleFavoriteUseCase(photo)
                 _userMessages.send(
-                    if (wasAdding) "Favorite 목록에 저장 되었습니다." else "Favorite 목록에서 삭제 되었습니다."
+                    if (willBeFavorite) "Favorite 목록에 저장 되었습니다." else "Favorite 목록에서 삭제 되었습니다."
                 )
             } catch (e: Exception) {
                 _userMessages.send(e.message ?: "저장 중 오류가 발생했습니다")

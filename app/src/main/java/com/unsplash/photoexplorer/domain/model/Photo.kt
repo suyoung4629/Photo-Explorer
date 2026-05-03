@@ -4,6 +4,7 @@ data class Photo(
     val id: String,
     val imageUrls: PhotoUrls,
     val username: String,
+    val name: String?,
     val profileImageUrl: String?,
     val width: Int,
     val height: Int,

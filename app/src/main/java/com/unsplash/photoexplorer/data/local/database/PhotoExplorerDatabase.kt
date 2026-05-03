@@ -7,7 +7,7 @@ import com.unsplash.photoexplorer.data.local.entity.FavoritePhotoEntity
 
 @Database(
     entities = [FavoritePhotoEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class PhotoExplorerDatabase : RoomDatabase() {

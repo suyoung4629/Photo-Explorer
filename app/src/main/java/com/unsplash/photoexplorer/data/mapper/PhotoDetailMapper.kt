@@ -13,6 +13,7 @@ fun PhotoDetailDto.toPhotoDetail(isFavorite: Boolean): PhotoDetail = PhotoDetail
         id = id,
         imageUrls = urls.toPhotoUrls(),
         username = user.username,
+        name = user.name,
         profileImageUrl = user.profileImageUrl(),
         width = width,
         height = height,

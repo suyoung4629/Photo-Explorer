@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.unsplash.photoexplorer.presentation.detail.PhotoDetailScreen
 import com.unsplash.photoexplorer.presentation.favorites.FavoritesScreen
 import com.unsplash.photoexplorer.presentation.list.PhotoListScreen
@@ -28,10 +27,8 @@ fun PhotoExplorerNavGraph() {
             )
         }
 
-        composable<Route.PhotoDetail> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.PhotoDetail>()
+        composable<Route.PhotoDetail> {
             PhotoDetailScreen(
-                photoId = route.photoId,
                 onBack = { navController.popBackStack() },
             )
         }
