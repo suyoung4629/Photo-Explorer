@@ -66,6 +66,7 @@ class PhotoListViewModel @Inject constructor(
      * 사진의 즐겨찾기 상태를 토글한다.
      */
     fun toggleFavorite(photo: Photo) {
+        if (photo.id.isBlank()) return
         viewModelScope.launch {
             _uiState.update { it.copy(togglingPhotoIds = it.togglingPhotoIds + photo.id) }
             val wasAdding = !photo.isFavorite
