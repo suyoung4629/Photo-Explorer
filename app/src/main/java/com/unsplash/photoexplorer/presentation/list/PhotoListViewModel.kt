@@ -62,7 +62,7 @@ class PhotoListViewModel @Inject constructor(
     private val _userMessages = Channel<String>(Channel.BUFFERED)
     val userMessages: Flow<String> = _userMessages.receiveAsFlow()
 
-    /**
+    /**ㄹ
      * 사진의 즐겨찾기 상태를 토글한다.
      */
     fun toggleFavorite(photo: Photo) {
