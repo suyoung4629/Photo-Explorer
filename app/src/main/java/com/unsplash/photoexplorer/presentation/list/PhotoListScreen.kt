@@ -1,5 +1,6 @@
 package com.unsplash.photoexplorer.presentation.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +13,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -32,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,6 +48,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.presentation.common.PhotoCard
 
@@ -91,11 +98,26 @@ private fun PhotoListContent(
     onToggleItemFavorite: (Photo) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val gridState = rememberLazyStaggeredGridState()
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Unsplash Explorer") },
+                title = {
+                    Text(
+                        text = "Unsplash Explorer",
+                        modifier = Modifier.clickable {
+                            scope.launch {
+                                if (gridState.firstVisibleItemIndex > 10) {
+                                    gridState.scrollToItem(5)
+                                }
+                                gridState.animateScrollToItem(0)
+                            }
+                        },
+                    )
+                },
                 actions = {
                     IconButton(
                         onClick = onFavoritesClick,
@@ -112,8 +134,11 @@ private fun PhotoListContent(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
+        val isRefreshing = photos.loadState.refresh is LoadState.Loading && photos.itemCount > 0
+        val pullToRefreshState = rememberPullToRefreshState()
+
         when {
-            photos.loadState.refresh is LoadState.Loading -> {
+            photos.loadState.refresh is LoadState.Loading && photos.itemCount == 0 -> {
                 FullScreenLoading(modifier = Modifier.padding(innerPadding))
             }
             photos.loadState.refresh is LoadState.Error -> {
@@ -126,13 +151,20 @@ private fun PhotoListContent(
                 FullScreenEmpty(modifier = Modifier.padding(innerPadding))
             }
             else -> {
-                PhotoStaggeredGrid(
-                    photos = photos,
-                    togglingPhotoIds = togglingPhotoIds,
-                    onPhotoClick = onPhotoClick,
-                    onToggleFavorite = onToggleItemFavorite,
+                PullToRefreshBox(
+                    isRefreshing = isRefreshing,
+                    onRefresh = { photos.refresh() },
+                    state = pullToRefreshState,
                     modifier = Modifier.padding(innerPadding),
-                )
+                ) {
+                    PhotoStaggeredGrid(
+                        photos = photos,
+                        togglingPhotoIds = togglingPhotoIds,
+                        gridState = gridState,
+                        onPhotoClick = onPhotoClick,
+                        onToggleFavorite = onToggleItemFavorite,
+                    )
+                }
             }
         }
     }
@@ -142,12 +174,14 @@ private fun PhotoListContent(
 private fun PhotoStaggeredGrid(
     photos: LazyPagingItems<Photo>,
     togglingPhotoIds: Set<String>,
+    gridState: LazyStaggeredGridState,
     onPhotoClick: (String) -> Unit,
     onToggleFavorite: (Photo) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
+        state = gridState,
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(8.dp),
         verticalItemSpacing = 8.dp,
