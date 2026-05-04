@@ -61,6 +61,13 @@ fun PhotoListScreen(
         }
     }
 
+    val pagingError = (photos.loadState.refresh as? LoadState.Error
+        ?: photos.loadState.append as? LoadState.Error)?.error
+
+    LaunchedEffect(pagingError) {
+        pagingError?.message?.let { snackbarHostState.showSnackbar(it) }
+    }
+
     PhotoListContent(
         photos = photos,
         uiState = uiState,
