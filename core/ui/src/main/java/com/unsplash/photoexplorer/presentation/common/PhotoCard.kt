@@ -44,7 +44,7 @@ import com.unsplash.photoexplorer.domain.model.Photo
  * PhotoListScreen과 FavoritesScreen에서 공통 사용.
  */
 @Composable
-internal fun PhotoCard(
+fun PhotoCard(
     photo: Photo,
     isToggling: Boolean,
     onClick: () -> Unit,

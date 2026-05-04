@@ -24,4 +24,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "PhotoExplorer"
 include(":app")
- 
+include(":core:domain")
+include(":core:data")
+include(":core:ui")
+include(":feature:photolist")
+include(":feature:photodetail")
+include(":feature:favorites")

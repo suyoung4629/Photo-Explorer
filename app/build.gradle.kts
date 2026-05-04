@@ -15,11 +15,7 @@ val unsplashAccessKey: String = Properties().apply {
 
 android {
     namespace = "com.unsplash.photoexplorer"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.unsplash.photoexplorer"
@@ -54,18 +50,25 @@ android {
 }
 
 dependencies {
+    // Modules
+    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
+    implementation(project(":core:ui"))
+    implementation(project(":feature:photolist"))
+    implementation(project(":feature:photodetail"))
+    implementation(project(":feature:favorites"))
+
+    // Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.core)
-    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
+
+    // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
@@ -75,29 +78,19 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
-    // Room
+    // Room (for DI module)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
 
-    // Retrofit + OkHttp + kotlinx.serialization
+    // Retrofit + OkHttp (for DI module)
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit.kotlinx.serialization.converter)
 
-    // Paging 3
-    implementation(libs.androidx.paging.runtime)
-    implementation(libs.androidx.paging.compose)
-
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-
-    // Coil 3
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

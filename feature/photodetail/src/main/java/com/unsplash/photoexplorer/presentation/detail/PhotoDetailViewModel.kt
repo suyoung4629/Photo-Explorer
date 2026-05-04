@@ -3,12 +3,10 @@ package com.unsplash.photoexplorer.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.unsplash.photoexplorer.domain.model.PhotoDetail
 import com.unsplash.photoexplorer.domain.usecase.GetPhotoDetailUseCase
 import com.unsplash.photoexplorer.domain.usecase.ObserveFavoriteIdsUseCase
 import com.unsplash.photoexplorer.presentation.common.FavoriteToggleManager
-import com.unsplash.photoexplorer.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +34,7 @@ class PhotoDetailViewModel @Inject constructor(
     observeFavoriteIdsUseCase: ObserveFavoriteIdsUseCase,
 ) : ViewModel() {
 
-    private val photoId: String = savedStateHandle.toRoute<Route.PhotoDetail>().photoId
+    private val photoId: String = checkNotNull(savedStateHandle.get<String>("photoId"))
 
     private sealed interface LoadState {
         data object Loading : LoadState
