@@ -1,5 +1,6 @@
 package com.unsplash.photoexplorer.presentation.common
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,7 +65,7 @@ internal fun PhotoCard(
     ) {
         Column {
             AsyncImage(
-                model = photo.localPath ?: photo.imageUrls.regular,
+                model = photo.localPath ?: photo.imageUrls.small,
                 contentDescription = photo.description,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,12 +103,14 @@ private fun PhotoCardFooter(
             contentScale = ContentScale.Crop,
         )
         Spacer(Modifier.width(8.dp))
+        Log.i("syTest","photo.name = ${photo.name}")
         if (!photo.name.isNullOrBlank()) {
             Text(
                 text = "by ${photo.name}",
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         } else {
             Spacer(Modifier.weight(1f))
