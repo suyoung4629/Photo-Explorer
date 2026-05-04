@@ -21,14 +21,22 @@ class PhotoFileStore @Inject constructor(
     }
 
     suspend fun download(url: String, photoId: String): String = withContext(Dispatchers.IO) {
+        if (favoritesDir.usableSpace < MIN_REQUIRED_SPACE) {
+            throw IOException("저장 공간이 부족합니다")
+        }
         val target = File(favoritesDir, "$photoId.jpg")
-        val request = Request.Builder().url(url).build()
-        okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                throw IOException("Download failed: HTTP ${response.code}")
+        try {
+            val request = Request.Builder().url(url).build()
+            okHttpClient.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Download failed: HTTP ${response.code}")
+                }
+                val body = response.body ?: throw IOException("Download failed: empty body")
+                target.outputStream().use { out -> body.byteStream().copyTo(out) }
             }
-            val body = response.body ?: throw IOException("Download failed: empty body")
-            target.outputStream().use { out -> body.byteStream().copyTo(out) }
+        } catch (e: Exception) {
+            target.delete()
+            throw e
         }
         target.absolutePath
     }
@@ -42,5 +50,6 @@ class PhotoFileStore @Inject constructor(
 
     private companion object {
         const val FAVORITES_DIR = "favorites"
+        const val MIN_REQUIRED_SPACE = 50L * 1024 * 1024 // 50MB
     }
 }
