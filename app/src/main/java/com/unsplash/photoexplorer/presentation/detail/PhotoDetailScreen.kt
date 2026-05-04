@@ -43,12 +43,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.flow.collectLatest
+import coil3.memory.MemoryCache
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.unsplash.photoexplorer.domain.model.PhotoDetail
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun PhotoDetailScreen(
@@ -185,8 +189,13 @@ private fun PhotoDetailBody(detail: PhotoDetail) {
                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
             ),
         ) {
+
             AsyncImage(
-                model = photo.imageUrls.full,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(photo.imageUrls.full)
+                    .placeholderMemoryCacheKey(MemoryCache.Key("${photo.id}_small"))
+                    .crossfade(true)
+                    .build(),
                 contentDescription = photo.description,
                 modifier = Modifier
                     .fillMaxWidth()
