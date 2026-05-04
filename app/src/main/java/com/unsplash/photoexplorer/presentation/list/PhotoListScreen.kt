@@ -51,7 +51,7 @@ fun PhotoListScreen(
     modifier: Modifier = Modifier,
     viewModel: PhotoListViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val togglingPhotoIds by viewModel.togglingPhotoIds.collectAsStateWithLifecycle()
     val photos = viewModel.photos.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -70,7 +70,7 @@ fun PhotoListScreen(
 
     PhotoListContent(
         photos = photos,
-        uiState = uiState,
+        togglingPhotoIds = togglingPhotoIds,
         snackbarHostState = snackbarHostState,
         onPhotoClick = onPhotoClick,
         onFavoritesClick = onFavoritesClick,
@@ -83,7 +83,7 @@ fun PhotoListScreen(
 @Composable
 private fun PhotoListContent(
     photos: LazyPagingItems<Photo>,
-    uiState: PhotoListUiState,
+    togglingPhotoIds: Set<String>,
     snackbarHostState: SnackbarHostState,
     onPhotoClick: (String) -> Unit,
     onFavoritesClick: () -> Unit,
@@ -127,7 +127,7 @@ private fun PhotoListContent(
             else -> {
                 PhotoStaggeredGrid(
                     photos = photos,
-                    togglingPhotoIds = uiState.togglingPhotoIds,
+                    togglingPhotoIds = togglingPhotoIds,
                     onPhotoClick = onPhotoClick,
                     onToggleFavorite = onToggleItemFavorite,
                     modifier = Modifier.padding(innerPadding),
