@@ -19,10 +19,7 @@ interface FavoritePhotoDao {
     @Query("DELETE FROM favorite_photos WHERE id = :id")
     suspend fun deleteById(id: String)
 
-    @Query("SELECT EXISTS(SELECT 1 FROM favorite_photos WHERE id = :id)")
-    suspend fun isFavorite(id: String): Boolean
-
-    @Query("SELECT id FROM favorite_photos")
+@Query("SELECT id FROM favorite_photos")
     fun observeFavoriteIds(): Flow<List<String>>
 
     @Query("SELECT * FROM favorite_photos ORDER BY addedAt DESC")

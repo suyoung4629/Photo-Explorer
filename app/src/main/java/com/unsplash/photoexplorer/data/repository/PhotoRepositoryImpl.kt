@@ -44,8 +44,7 @@ class PhotoRepositoryImpl @Inject constructor(
 
     override suspend fun getPhotoDetail(id: String): PhotoDetail {
         val dto = unsplashApi.getPhotoDetail(id)
-        val isFavorite = favoriteDao.isFavorite(id)
-        return dto.toPhotoDetail(isFavorite = isFavorite)
+        return dto.toPhotoDetail(isFavorite = false)
     }
 
     override suspend fun toggleFavorite(photo: Photo) {
