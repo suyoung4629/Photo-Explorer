@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import kotlinx.coroutines.flow.collectLatest
 import com.unsplash.photoexplorer.domain.model.PhotoDetail
 
 @Composable
@@ -59,7 +60,7 @@ fun PhotoDetailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.userMessages.collect { message ->
+        viewModel.userMessages.collectLatest { message ->
             snackbarHostState.showSnackbar(message)
         }
     }

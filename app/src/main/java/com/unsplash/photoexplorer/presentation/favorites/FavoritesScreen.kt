@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.presentation.common.PhotoCard
 
@@ -42,7 +43,7 @@ fun FavoritesScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.userMessages.collect { message ->
+        viewModel.userMessages.collectLatest { message ->
             snackbarHostState.showSnackbar(message)
         }
     }

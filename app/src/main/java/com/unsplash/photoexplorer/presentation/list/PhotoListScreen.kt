@@ -41,6 +41,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.collectLatest
 import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.presentation.common.PhotoCard
 
@@ -56,7 +57,7 @@ fun PhotoListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.userMessages.collect { message ->
+        viewModel.userMessages.collectLatest { message ->
             snackbarHostState.showSnackbar(message)
         }
     }
