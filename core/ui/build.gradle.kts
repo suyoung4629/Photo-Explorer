@@ -20,4 +20,7 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+
+    // Test
+    testImplementation(libs.turbine)
 }

@@ -20,6 +20,8 @@ paging = "3.3.5"
 coroutines = "1.9.0"
 coil = "3.0.4"
 kotlinxSerializationJson = "1.7.3"
+mockk = "1.13.16"
+turbine = "1.2.0"
 retrofitKotlinxSerializationConverter = "1.0.0"
 
 [libraries]
@@ -74,6 +76,11 @@ androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", 
 
 # Coroutines
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# Test
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # Coil 3
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }

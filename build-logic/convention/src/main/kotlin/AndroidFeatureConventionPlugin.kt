@@ -21,6 +21,8 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("coil-compose").get())
                 add("implementation", libs.findLibrary("coil-network-okhttp").get())
                 add("implementation", libs.findLibrary("kotlinx-coroutines-android").get())
+
+                add("testImplementation", libs.findLibrary("turbine").get())
             }
         }
     }
