@@ -1,33 +1,15 @@
 plugins {
-    alias(libs.plugins.android.library)
+    id("photoexplorer.android.library")
+    id("photoexplorer.android.hilt")
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "com.unsplash.photoexplorer.core.data"
-    compileSdk = 36
-
-    defaultConfig {
-        minSdk = 24
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlin {
-        jvmToolchain(11)
-    }
 }
 
 dependencies {
     implementation(project(":core:domain"))
-
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 
     // Room
     implementation(libs.androidx.room.runtime)
