@@ -23,7 +23,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PhotoExplorer"
+rootProject.name = "UnSplashPhotoExplorer"
 include(":app")
 include(":core:domain")
 include(":core:data")
