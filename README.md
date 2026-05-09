@@ -12,6 +12,7 @@ Unsplash API를 사용한 사진 탐색 안드로이드 앱입니다. Jetpack Co
 > **시연 영상**
 > - https://github.com/user-attachments/assets/9dca3eeb-2ff3-4dd9-9fcd-4dcde99bb248
 > - https://github.com/user-attachments/assets/ed40e9f2-4a02-4eb6-abea-e851f668b30c
+<img width="1070" height="882" alt="image" src="https://github.com/user-attachments/assets/dc68a681-b0a8-4af8-9e62-83d60b466377" />
 
 ---
 
