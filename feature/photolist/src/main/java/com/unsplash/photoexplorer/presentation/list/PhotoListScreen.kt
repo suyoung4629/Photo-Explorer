@@ -82,7 +82,7 @@ fun PhotoListScreen(
         snackbarHostState = snackbarHostState,
         onPhotoClick = onPhotoClick,
         onFavoritesClick = onFavoritesClick,
-        onToggleItemFavorite = viewModel::toggleFavorite,
+        onToggleItemFavorite = { viewModel.onIntent(PhotoListIntent.ToggleFavorite(it)) },
         modifier = modifier,
     )
 }

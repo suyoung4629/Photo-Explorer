@@ -53,7 +53,7 @@ fun FavoritesScreen(
         snackbarHostState = snackbarHostState,
         onPhotoClick = onPhotoClick,
         onBack = onBack,
-        onToggleFavorite = viewModel::toggleFavorite,
+        onToggleFavorite = { viewModel.onIntent(FavoritesIntent.ToggleFavorite(it)) },
         modifier = modifier,
     )
 }

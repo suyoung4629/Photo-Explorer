@@ -73,8 +73,8 @@ fun PhotoDetailScreen(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
-        onRetry = viewModel::retry,
-        onToggleFavorite = viewModel::toggleFavorite,
+        onRetry = { viewModel.onIntent(PhotoDetailIntent.Retry) },
+        onToggleFavorite = { viewModel.onIntent(PhotoDetailIntent.ToggleFavorite) },
         modifier = modifier,
     )
 }

@@ -120,7 +120,7 @@ class PhotoDetailViewModelTest {
 
         assertTrue(viewModel.uiState.value is PhotoDetailUiState.Error)
 
-        viewModel.retry()
+        viewModel.onIntent(PhotoDetailIntent.Retry)
 
         val state = viewModel.uiState.value as PhotoDetailUiState.Success
         assertEquals("photo1", state.detail.photo.id)

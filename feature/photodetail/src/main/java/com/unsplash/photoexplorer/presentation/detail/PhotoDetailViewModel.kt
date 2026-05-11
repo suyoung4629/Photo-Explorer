@@ -17,6 +17,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface PhotoDetailIntent {
+    data object Retry : PhotoDetailIntent
+    data object ToggleFavorite : PhotoDetailIntent
+}
+
 sealed interface PhotoDetailUiState {
     data object Loading : PhotoDetailUiState
     data class Success(
@@ -74,8 +79,14 @@ class PhotoDetailViewModel @Inject constructor(
         load()
     }
 
-    fun retry() {
-        load()
+    fun onIntent(intent: PhotoDetailIntent) {
+        when (intent) {
+            is PhotoDetailIntent.Retry -> load()
+            is PhotoDetailIntent.ToggleFavorite -> {
+                val current = uiState.value as? PhotoDetailUiState.Success ?: return
+                favoriteToggleManager.toggle(current.detail.photo, viewModelScope)
+            }
+        }
     }
 
     private fun load() {
@@ -90,10 +101,5 @@ class PhotoDetailViewModel @Inject constructor(
                 )
             }
         }
-    }
-
-    fun toggleFavorite() {
-        val current = uiState.value as? PhotoDetailUiState.Success ?: return
-        favoriteToggleManager.toggle(current.detail.photo, viewModelScope)
     }
 }

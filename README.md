@@ -1,6 +1,6 @@
 # Unsplash Photo Explorer
 
-Unsplash API를 사용한 사진 탐색 안드로이드 앱입니다. Jetpack Compose, Coroutines/Flow, 멀티모듈 구조, MVVM + UDF로 구성되어 있습니다.
+Unsplash API를 사용한 사진 탐색 안드로이드 앱입니다. Jetpack Compose, Coroutines/Flow, 멀티모듈 구조, MVI로 구성되어 있습니다.
 
 > [!IMPORTANT]
 > 실행하려면 루트의 `local.properties`에 Unsplash API 키가 필요합니다.
@@ -63,7 +63,7 @@ Unsplash API를 사용한 사진 탐색 안드로이드 앱입니다. Jetpack Co
    Presentation                              Data
    (feature/*)                            (core:data)
    Compose Screen                  Repository 구현 · Paging
-   ViewModel : StateFlow              Retrofit · Room · Mapper
+   ViewModel (MVI) : Intent → State   Retrofit · Room · Mapper
         │                                       │
         │ UseCase 호출                           │ Repository 인터페이스 구현
         ▼                                       ▼

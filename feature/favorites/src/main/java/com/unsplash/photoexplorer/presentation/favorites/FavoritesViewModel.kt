@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
+sealed interface FavoritesIntent {
+    data class ToggleFavorite(val photo: Photo) : FavoritesIntent
+}
+
 data class FavoritesUiState(
     val photos: List<Photo> = emptyList(),
     val togglingPhotoIds: Set<String> = emptySet(),
@@ -37,7 +41,11 @@ class FavoritesViewModel @Inject constructor(
 
     val userMessages: Flow<String> = favoriteToggleManager.messages
 
-    fun toggleFavorite(photo: Photo) {
-        favoriteToggleManager.toggle(photo, viewModelScope)
+    fun onIntent(intent: FavoritesIntent) {
+        when (intent) {
+            is FavoritesIntent.ToggleFavorite -> {
+                favoriteToggleManager.toggle(intent.photo, viewModelScope)
+            }
+        }
     }
 }
