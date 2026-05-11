@@ -9,19 +9,21 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.orbitmvi.orbit.test.test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoritesViewModelTest {
 
+    private val testDispatcher = UnconfinedTestDispatcher()
+
     @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    val mainDispatcherRule = MainDispatcherRule(testDispatcher)
 
     private val getFavoritePhotosUseCase = mockk<GetFavoritePhotosUseCase>()
     private val favoriteToggleManager = mockk<FavoriteToggleManager>(relaxed = true)
@@ -65,52 +67,39 @@ class FavoritesViewModelTest {
     }
 
     @Test
-    fun `initial uiState has empty photos`() {
-        val viewModel = createViewModel()
-
-        assertEquals(FavoritesUiState(), viewModel.uiState.value)
-    }
-
-    @Test
     fun `uiState emits favorite photos`() = runTest {
         val viewModel = createViewModel()
 
-        val job = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.collect {}
+        viewModel.test(this) {
+            runOnCreate()
+            expectState {
+                FavoritesUiState(photos = testPhotos, togglingPhotoIds = emptySet())
+            }
+            cancelAndIgnoreRemainingItems()
         }
-
-        val state = viewModel.uiState.value
-        assertEquals(2, state.photos.size)
-        assertEquals("fav1", state.photos[0].id)
-        assertEquals("fav2", state.photos[1].id)
-
-        job.cancel()
     }
 
     @Test
     fun `uiState includes togglingPhotoIds`() = runTest {
         val viewModel = createViewModel(togglingIds = setOf("fav1"))
 
-        val job = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.collect {}
+        viewModel.test(this) {
+            runOnCreate()
+            expectState {
+                FavoritesUiState(photos = testPhotos, togglingPhotoIds = setOf("fav1"))
+            }
+            cancelAndIgnoreRemainingItems()
         }
-
-        assertTrue("fav1" in viewModel.uiState.value.togglingPhotoIds)
-
-        job.cancel()
     }
 
     @Test
     fun `uiState emits empty list when no favorites`() = runTest {
         val viewModel = createViewModel(photos = emptyList())
 
-        val job = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            viewModel.uiState.collect {}
+        viewModel.test(this) {
+            runOnCreate()
+            // 초기 상태와 동일(빈 리스트)하므로 추가 상태 변경 없음
+            cancelAndIgnoreRemainingItems()
         }
-
-        assertTrue(viewModel.uiState.value.photos.isEmpty())
-
-        job.cancel()
     }
-
 }

@@ -35,7 +35,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,13 +45,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.unsplash.photoexplorer.domain.model.PhotoDetail
-import kotlinx.coroutines.flow.collectLatest
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun PhotoDetailScreen(
@@ -60,12 +59,12 @@ fun PhotoDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: PhotoDetailViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        viewModel.userMessages.collectLatest { message ->
-            snackbarHostState.showSnackbar(message)
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is PhotoDetailSideEffect.ShowMessage -> snackbarHostState.showSnackbar(sideEffect.message)
         }
     }
 
@@ -73,8 +72,8 @@ fun PhotoDetailScreen(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
-        onRetry = { viewModel.onIntent(PhotoDetailIntent.Retry) },
-        onToggleFavorite = { viewModel.onIntent(PhotoDetailIntent.ToggleFavorite) },
+        onRetry = viewModel::retry,
+        onToggleFavorite = viewModel::toggleFavorite,
         modifier = modifier,
     )
 }

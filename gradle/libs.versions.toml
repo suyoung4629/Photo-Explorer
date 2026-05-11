@@ -22,6 +22,7 @@ coil = "3.0.4"
 kotlinxSerializationJson = "1.7.3"
 mockk = "1.13.16"
 turbine = "1.2.0"
+orbit = "11.0.0"
 retrofitKotlinxSerializationConverter = "1.0.0"
 
 [libraries]
@@ -81,6 +82,12 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
+# Orbit MVI
+orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbit" }
+orbit-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbit" }
+orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
+orbit-test = { group = "org.orbit-mvi", name = "orbit-test", version.ref = "orbit" }
 
 # Coil 3
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }

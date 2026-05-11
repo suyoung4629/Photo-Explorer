@@ -6,46 +6,49 @@ import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.domain.usecase.GetFavoritePhotosUseCase
 import com.unsplash.photoexplorer.presentation.common.FavoriteToggleManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
-
-sealed interface FavoritesIntent {
-    data class ToggleFavorite(val photo: Photo) : FavoritesIntent
-}
 
 data class FavoritesUiState(
     val photos: List<Photo> = emptyList(),
     val togglingPhotoIds: Set<String> = emptySet(),
 )
 
+sealed interface FavoritesSideEffect {
+    data class ShowMessage(val message: String) : FavoritesSideEffect
+}
+
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    getFavoritePhotosUseCase: GetFavoritePhotosUseCase,
+    private val getFavoritePhotosUseCase: GetFavoritePhotosUseCase,
     private val favoriteToggleManager: FavoriteToggleManager,
-) : ViewModel() {
+) : ContainerHost<FavoritesUiState, FavoritesSideEffect>, ViewModel() {
 
-    val uiState: StateFlow<FavoritesUiState> = combine(
-        getFavoritePhotosUseCase(),
-        favoriteToggleManager.togglingPhotoIds,
-    ) { photos, togglingIds ->
-        FavoritesUiState(photos = photos, togglingPhotoIds = togglingIds)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = FavoritesUiState(),
-    )
+    override val container = container<FavoritesUiState, FavoritesSideEffect>(FavoritesUiState()) {
+        observeState()
+        observeMessages()
+    }
 
-    val userMessages: Flow<String> = favoriteToggleManager.messages
-
-    fun onIntent(intent: FavoritesIntent) {
-        when (intent) {
-            is FavoritesIntent.ToggleFavorite -> {
-                favoriteToggleManager.toggle(intent.photo, viewModelScope)
-            }
+    private fun observeState() = intent {
+        combine(
+            getFavoritePhotosUseCase(),
+            favoriteToggleManager.togglingPhotoIds,
+        ) { photos, togglingIds ->
+            FavoritesUiState(photos = photos, togglingPhotoIds = togglingIds)
+        }.collect { newState ->
+            reduce { newState }
         }
+    }
+
+    private fun observeMessages() = intent {
+        favoriteToggleManager.messages.collect { message ->
+            postSideEffect(FavoritesSideEffect.ShowMessage(message))
+        }
+    }
+
+    fun toggleFavorite(photo: Photo) = intent {
+        favoriteToggleManager.toggle(photo, viewModelScope)
     }
 }

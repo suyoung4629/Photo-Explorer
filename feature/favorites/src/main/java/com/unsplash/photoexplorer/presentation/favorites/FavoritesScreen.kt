@@ -20,17 +20,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.collectLatest
 import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.presentation.common.PhotoCard
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun FavoritesScreen(
@@ -39,12 +38,12 @@ fun FavoritesScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        viewModel.userMessages.collectLatest { message ->
-            snackbarHostState.showSnackbar(message)
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is FavoritesSideEffect.ShowMessage -> snackbarHostState.showSnackbar(sideEffect.message)
         }
     }
 
@@ -53,7 +52,7 @@ fun FavoritesScreen(
         snackbarHostState = snackbarHostState,
         onPhotoClick = onPhotoClick,
         onBack = onBack,
-        onToggleFavorite = { viewModel.onIntent(FavoritesIntent.ToggleFavorite(it)) },
+        onToggleFavorite = viewModel::toggleFavorite,
         modifier = modifier,
     )
 }

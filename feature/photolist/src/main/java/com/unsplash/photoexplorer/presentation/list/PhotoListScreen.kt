@@ -42,15 +42,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import com.unsplash.photoexplorer.domain.model.Photo
 import com.unsplash.photoexplorer.presentation.common.PhotoCard
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun PhotoListScreen(
@@ -59,13 +59,13 @@ fun PhotoListScreen(
     modifier: Modifier = Modifier,
     viewModel: PhotoListViewModel = hiltViewModel(),
 ) {
-    val togglingPhotoIds by viewModel.togglingPhotoIds.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
     val photos = viewModel.photos.collectAsLazyPagingItems()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        viewModel.userMessages.collectLatest { message ->
-            snackbarHostState.showSnackbar(message)
+    viewModel.collectSideEffect { sideEffect ->
+        when (sideEffect) {
+            is PhotoListSideEffect.ShowMessage -> snackbarHostState.showSnackbar(sideEffect.message)
         }
     }
 
@@ -78,11 +78,11 @@ fun PhotoListScreen(
 
     PhotoListContent(
         photos = photos,
-        togglingPhotoIds = togglingPhotoIds,
+        togglingPhotoIds = uiState.togglingPhotoIds,
         snackbarHostState = snackbarHostState,
         onPhotoClick = onPhotoClick,
         onFavoritesClick = onFavoritesClick,
-        onToggleItemFavorite = { viewModel.onIntent(PhotoListIntent.ToggleFavorite(it)) },
+        onToggleItemFavorite = viewModel::toggleFavorite,
         modifier = modifier,
     )
 }

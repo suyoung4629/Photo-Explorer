@@ -8,16 +8,21 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
+import org.orbitmvi.orbit.test.test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PhotoListViewModelTest {
 
+    private val testDispatcher = UnconfinedTestDispatcher()
+
     @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()
+    val mainDispatcherRule = MainDispatcherRule(testDispatcher)
 
     private val getPhotoListUseCase = mockk<GetPhotoListUseCase>()
     private val observeFavoriteIdsUseCase = mockk<ObserveFavoriteIdsUseCase>()
@@ -33,14 +38,14 @@ class PhotoListViewModelTest {
     }
 
     @Test
-    fun `photos flow is not null`() {
+    fun `photos flow is not null`() = runTest {
         val viewModel = createViewModel()
 
         assertNotNull(viewModel.photos)
     }
 
     @Test
-    fun `togglingPhotoIds exposes manager state`() {
+    fun `togglingPhotoIds exposes manager state`() = runTest {
         val togglingFlow = MutableStateFlow(setOf("photo1"))
         every { getPhotoListUseCase() } returns flowOf(androidx.paging.PagingData.empty())
         every { observeFavoriteIdsUseCase() } returns flowOf(emptySet())
@@ -49,6 +54,10 @@ class PhotoListViewModelTest {
 
         val viewModel = PhotoListViewModel(getPhotoListUseCase, observeFavoriteIdsUseCase, favoriteToggleManager)
 
-        assertEquals(setOf("photo1"), viewModel.togglingPhotoIds.value)
+        viewModel.test(this) {
+            runOnCreate()
+            expectState { copy(togglingPhotoIds = setOf("photo1")) }
+            cancelAndIgnoreRemainingItems()
+        }
     }
 }

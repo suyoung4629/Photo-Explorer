@@ -21,8 +21,12 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
                 add("implementation", libs.findLibrary("coil-compose").get())
                 add("implementation", libs.findLibrary("coil-network-okhttp").get())
                 add("implementation", libs.findLibrary("kotlinx-coroutines-android").get())
+                add("implementation", libs.findLibrary("orbit-core").get())
+                add("implementation", libs.findLibrary("orbit-viewmodel").get())
+                add("implementation", libs.findLibrary("orbit-compose").get())
 
                 add("testImplementation", libs.findLibrary("turbine").get())
+                add("testImplementation", libs.findLibrary("orbit-test").get())
             }
         }
     }
